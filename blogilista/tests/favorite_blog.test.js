@@ -3,18 +3,31 @@ const { test, describe } = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 
-describe('total likes', () => {
-  test('when list has 6 blogs', () => {
-    const result = listHelper.totalLikes(blogs)
-    assert.strictEqual(result, 36)
+describe('favorite blog', () => {
+  test('blog with most likes out of 6 blogs', () => {
+    const result = listHelper.favoriteBlog(blogs1)
+    assert.deepStrictEqual(result, blogs1[2])
   })
-  test('when list has only one blog equals the likes of that', () => {
-    const result = listHelper.totalLikes([])
-    assert.strictEqual(result, 0)
+  test('when list has no blogs', () => {
+    const result = listHelper.favoriteBlog([])
+    assert.deepStrictEqual(result, 0)
+  })
+  test('when list has only one blog equals that', () => {
+    const result = listHelper.favoriteBlog([blogs2[0]])
+    assert.deepStrictEqual(result, blogs2[0])
   })
 
-
-const blogs = [
+const blogs2 = [
+  {
+    _id: "5a422a851b54a676234d17f7",
+    title: "React patterns",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 7,
+    __v: 0
+  }
+]
+const blogs1 = [
   {
     _id: "5a422a851b54a676234d17f7",
     title: "React patterns",
