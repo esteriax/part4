@@ -1,5 +1,10 @@
-describe('most blogs', () => {
-  const blogs = [
+const { test, describe } = require('node:test')
+const assert = require('node:assert')
+const listHelper = require('../utils/list_helper')
+
+describe('author with most likes from blogs', () => {
+
+ const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
     title: "React patterns",
@@ -49,20 +54,20 @@ describe('most blogs', () => {
     __v: 0
   }  
 ]
-
-  test('returns author with most blogs', () => {
-    const result = listHelper.mostBlogs(blogs)
+ 
+  test('returns author with most likes from blogs', () => {
+    const result = listHelper.mostBlogLikes(blogs)
     assert.deepStrictEqual(result, {
-      author: 'Robert C. Martin',
-      blogs: 3
+        author: 'Edsger W. Dijkstra',
+        likes: 17
     })
   })
 
   test('when list has one blog, returns that author', () => {
-    const result = listHelper.mostBlogs([blogs[0]])
+    const result = listHelper.mostBlogLikes([blogs[0]])
     assert.deepStrictEqual(result, {
-      author: 'Robert C. Martin',
-      blogs: 1
+      author: 'Michael Chan',
+      likes: 7
     })
   })
 })
