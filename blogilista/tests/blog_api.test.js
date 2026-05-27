@@ -124,7 +124,23 @@ test('blogs have id field instead of _id', async () => {
   })
 })
 
-test
+test('if likes property is missing, it defaults to 0', async () => {
+  const newBlog = {
+    title: 'Testi4',
+    author: 'Kirjoittaja4',
+    url: 'http://www.testi4.com'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const savedBlog = response.body.find(b => b.title === 'Testi4')
+  assert.strictEqual(savedBlog.likes, 0)
+})
 
 after(async () => {
   await mongoose.connection.close()
