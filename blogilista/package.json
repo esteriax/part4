@@ -3,17 +3,20 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
-    "test": "node --test",
-    "git": "git add . && git commit -m \"$npm_config_message\" && git push origin main"
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node --watch index.js",
+    "test": "NODE_ENV=test node --test",
+    "git": "git add . && git commit -m \"$npm_config_message\" && git push origin main",
+    "lint": "eslint ."
   },
   "dependencies": {
     "dotenv": "^16.0.0",
-    "express": "^4.18.0",
+    "express": "^5.2.1",
     "mongoose": "^7.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0"
+    "eslint": "^10.4.0",
+    "nodemon": "^3.0.0",
+    "supertest": "^7.2.2"
   }
 }
