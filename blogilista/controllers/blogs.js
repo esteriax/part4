@@ -7,6 +7,12 @@ blogsRouter.get('/', (request, response) => {
   })
 })
 
+blogsRouter.get('/:id', (request, response) => {
+  Blog.findById(request.params.id).then((blog) => {
+    response.json(blog)
+  })
+})
+
 blogsRouter.post('/', async(request, response) => {
   const body = request.body
   const blog = new Blog({

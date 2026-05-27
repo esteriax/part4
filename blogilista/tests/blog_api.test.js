@@ -104,7 +104,6 @@ test('blog without title is not added', async () => {
   assert.strictEqual(response.length, helper.initialBlogs.length)
 })
 
-/*
 test('a specific blog can be viewed', async () => {
    const blogsAtStart = await helper.blogsInDb()
   console.log('blogit:', blogsAtStart) 
@@ -118,7 +117,16 @@ test('a specific blog can be viewed', async () => {
     .expect('Content-Type', /application\/json/)
 
   assert.deepStrictEqual(resultBlog.body, blogToView)
-}) */
+})
+
+test('blogs have id field instead of _id', async () => {
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  blogs.forEach(blog => {
+    assert(blog.id)
+    assert(!blog._id)
+  })
+})
 
 after(async () => {
   await mongoose.connection.close()
