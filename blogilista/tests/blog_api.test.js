@@ -18,21 +18,6 @@ npm test -- --test-name-pattern="a specific note is within the returned notes"
 arametri voi viitata testin tai describe-lohkon nimeen. Parametrina voidaan antaa myös nimen osa. Seuraava komento suorittaisi kaikki testit, joiden nimessä on sana notes:
 npm run test -- --test-name-pattern="notes"
 */
-/*
-const initialBlogs = [
-  {
-    title: 'Testi1',
-    author: 'Kirjoittaja1',
-    url: 'http://www.testi1.com',
-    likes: 10
-  },
-  {
-    title: 'Testi2',
-    author: 'Kirjoittaja2',
-    url: 'http://www.testi2.com', 
-    likes: 5
-  },
-] */
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -81,13 +66,11 @@ test('a valid blog can be added ', async () => {
   assert(contents.includes('Testi3'))
 })
 
-test('blog without title is not added', async () => {
+test('blog without title or url is not added', async () => {
   const newBlog = {
     author: 'Kirjoittaja3',
-    url: 'http://www.testi3.com',
     likes: 15
   }
-
   await api
     .post('/api/blogs')
     .send(newBlog)
