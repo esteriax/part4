@@ -131,7 +131,34 @@ describe('deletion of a blog', () => {
   })
 })
 
+describe('updating a blog', () => {
+  test('a blog can be updated', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
 
+    const updatedBlog = {
+      ...blogToUpdate,
+      likes: blogToUpdate.likes + 1
+    }
+
+    const result = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    assert.strictEqual(result.body.likes, blogToUpdate.likes + 1)
+  })
+
+  test('updating a non-existing blog returns 404', async () => {
+    const nonExistingId = await helper.nonExistingId()
+
+    await api
+      .put(`/api/blogs/${nonExistingId}`)
+      .send({ likes: 1 })
+      .expect(404)
+  })
+})
 
 after(async () => {
   await mongoose.connection.close()

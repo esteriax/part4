@@ -40,10 +40,24 @@ blogsRouter.delete('/:id', async (request, response, next) => {
     next(error)
   }
 })
-/*
-const PORT = 3003
-blogsRouter.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-}) */
+
+blogsRouter.put('/:id', async (request, response, next) => {
+  const body = request.body
+  const blog = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes
+  }
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+    if (!updatedBlog) {
+      return response.status(404).end()
+    }
+    response.json(updatedBlog)
+  } catch (error) {
+    next(error)
+  }
+})
 
 module.exports = blogsRouter
