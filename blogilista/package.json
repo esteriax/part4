@@ -5,7 +5,7 @@
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development node --watch index.js",
-    "test": "NODE_ENV=test node --test",
+    "test": "NODE_ENV=test node --test --test-concurrency=1",
     "git": "git add . && git commit -m \"$npm_config_message\" && git push origin main",
     "lint": "eslint ."
   },
