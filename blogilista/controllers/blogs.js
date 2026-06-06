@@ -2,6 +2,7 @@ const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const { usersInDb } = require('../tests/test_helper')
 
 //refaktorointi: async/await, virheenkäsittely, 404-virhekoodi, id:n tarkistus
 blogsRouter.get('/', async (request, response) => {
@@ -27,9 +28,9 @@ const getTokenFrom = request => {
   return null
 }
 
-blogsRouter.post('/', async(request, response) => {
+blogsRouter.post('/', async(request, response, next) => {
   const body = request.body
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  /*const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' })
   }
@@ -37,18 +38,20 @@ blogsRouter.post('/', async(request, response) => {
 
   if (!user) {
     return response.status(400).json({ error: 'userId missing or not valid' })
-  }
+  }*/
+ const defaultUser = await User.findOne({})
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: user._id
+    user: defaultUser._id
   })
 
   const savedBlog = await blog.save()
-  user.blogs = user.blogs.concat(savedBlog._id)
-  await user.save()
+  defaultUser.blogs = defaultUser.blogs.concat(savedBlog._id)
+  await defaultUser.save()
+  response.status(201).json(savedBlog)
 })
 // debuggaus deleteOne() -> findByIdAndDelete(), 404-virhekoodi, id:n tarkistus 
 blogsRouter.delete('/:id', async (request, response, next) => {

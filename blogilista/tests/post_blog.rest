@@ -3,8 +3,8 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjZhMjFkYzRkMGYyOGEyMzNjYTQ5YzBjZiIsImlhdCI6MTc4MDc0OTA2Mn0.3Nej-QGudmebVq8ZVn-YPBtslYv3rFVaHgCWqelqWvA
  
 {
-  "title": "blogi3",
-  "author": "kirjoittaja3",
-  "url": "blogi3.fi",
-  "likes": 3
+  "title": "blogi4",
+  "author": "kirjoittaja4",
+  "url": "blogi4.fi",
+  "likes": 4
 }
