@@ -28,9 +28,9 @@ const getTokenFrom = request => {
   return null
 }
 
-blogsRouter.post('/', async(request, response, next) => {
+blogsRouter.post('/', async(request, response) => {
   const body = request.body
-  /*const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' })
   }
@@ -38,21 +38,20 @@ blogsRouter.post('/', async(request, response, next) => {
 
   if (!user) {
     return response.status(400).json({ error: 'userId missing or not valid' })
-  }*/
- const defaultUser = await User.findOne({})
+  }
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: defaultUser._id
+    user: user._id
   })
 
   const savedBlog = await blog.save()
-  defaultUser.blogs = defaultUser.blogs.concat(savedBlog._id)
-  await defaultUser.save()
-  response.status(201).json(savedBlog)
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
 })
+
 // debuggaus deleteOne() -> findByIdAndDelete(), 404-virhekoodi, id:n tarkistus 
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
