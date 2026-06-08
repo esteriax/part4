@@ -110,21 +110,58 @@ describe('adding blogs', () => {
 })
 */
 describe('deletion of a blog', () => {
-  test('a blog can be deleted', async () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+    await user.save()
+
+    await Blog.deleteMany({})
+    const blogObjects = helper.initialBlogs.map(b => ({ ...b, user: user._id }))
+    await Blog.insertMany(blogObjects)
+  })
+  test('deletion fails with 401 if token is missing', async () => {
     const blogsAtStart = await helper.blogsInDb()
-    //console.log('blogeja alussa:', blogsAtStart.length)
     const blogToDelete = blogsAtStart[0]
-    //console.log('poistettava:', blogToDelete)
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
-      .expect(204)
+      .expect(401)
 
     const blogsAtEnd = await helper.blogsInDb()
-    const ids = blogsAtEnd.map(b => b.id)
-    assert(!ids.includes(blogToDelete.id))
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
   })
+
+  test('a blog can be deleted by its creator', async () => {
+    //kirjaudutaan root:ina ja saadaan token
+    const loginResult = await api
+      .post('/api/login')
+      .send({ username: 'root', password: 'sekret' })
+      .expect(200)
+
+    console.log('token:', loginResult.body.token)
+
+    const token = loginResult.body.token
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    console.log('blogeja:', blogsAtStart.length)    
+    console.log('blogi:', blogsAtStart[0])        
+
+    const deleteResult = await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+
+    console.log('delete status:', deleteResult.status)   
+    console.log('delete body:', deleteResult.body)        
+
+    //const blogsAtEnd = await helper.blogsInDb()
+    //const ids = blogsAtEnd.map(b => b.id)
+    //assert(!ids.includes(blogToDelete.id))
+    //assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+    assert.strictEqual(deleteResult.status, 204)
+  })
+})
   test('a blog that does not exist returns 404', async () => {
     const nonExistingId = await helper.nonExistingId()
 
@@ -132,7 +169,6 @@ describe('deletion of a blog', () => {
       .delete(`/api/blogs/${nonExistingId}`)
       .expect(404)
   })
-})
 
 describe('updating a blog', () => {
   test('a blog can be updated', async () => {

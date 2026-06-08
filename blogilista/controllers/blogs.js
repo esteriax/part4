@@ -20,7 +20,7 @@ blogsRouter.get('/:id', async (request, response) => {
 })
 
 
-blogsRouter.post('/', async(request, response) => {
+blogsRouter.post('/', async(request, response, next) => {
   const body = request.body
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if (!decodedToken.id) {
@@ -31,27 +31,41 @@ blogsRouter.post('/', async(request, response) => {
   if (!user) {
     return response.status(400).json({ error: 'userId missing or not valid' })
   }
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id
-  })
 
-  const savedBlog = await blog.save()
-  user.blogs = user.blogs.concat(savedBlog._id)
-  await user.save()
+  try {
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id
+    })
+
+    const savedBlog = await blog.save()
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
+} catch (error) {
+  next(error)
+}
 })
 
 // debuggaus deleteOne() -> findByIdAndDelete(), 404-virhekoodi, id:n tarkistus 
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
-    const deleted = await Blog.findByIdAndDelete(request.params.id)
-    if (!deleted) {
-      return response.status(404).end()
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' })
+  }
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
     }
-    response.status(204).end()
+  
+  if ( blog.user.toString() !== decodedToken.id.toString() ) {
+    return response.status(403).json({ error: 'only the creator of the blog can delete it' })
+  }
+  await Blog.findByIdAndDelete(request.params.id)
+  response.status(204).end()
   } catch (error) {
     next(error)
   }
